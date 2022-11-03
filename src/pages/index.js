@@ -8,6 +8,7 @@ import Grid from '../components/Grid';
 
 export default function Home() {
   const [socket, setSocket] = useState(null);
+  const [socketStatus, setSocketStatus] = useState(null);
   const [instruments, setInstruments] = useState([]);
 
   useEffect(() => {
@@ -16,8 +17,9 @@ export default function Home() {
 
   useEffect(() => {
     if(socket) {
-      socket.open().then( status => {
-          socket.subAllInstruments(status)
+      socket.open().then(status => {
+          setSocketStatus(status);
+          socket.subAllInstruments(status);
           socket.listeningMessages(status, function message(response) {
             const { n, o } = JSON.parse(response.data);
             const channel = n; // GetInstruments | SubscribeLevel1 | Level1UpdateEvent
@@ -47,10 +49,8 @@ export default function Home() {
               return (
                 <Card 
                   key={ins.InstrumentId}
-                  icon={ins.Product1Symbol}
-                  id={ins.InstrumentId}
-                  symbol={ins.Symbol}
-                  sortIndex={ins.SortIndex}
+                  instrumentInfo={ins}
+                  socketStatus={socketStatus}
                   socket={socket}
                 />
               )

@@ -1,10 +1,13 @@
 export const foxbitAPIConnection = () => {
   const wsocket = new WebSocket('wss://api.foxbit.com.br/');
 
+  const status = (currentStatus) => currentStatus;
+
   const open = () => {
     return new Promise((resolve) => {
       wsocket.addEventListener('open', function open() {
         console.log('connected');
+        status(wsocket.readyState);
         resolve(wsocket.readyState);
       });
     })
@@ -35,7 +38,7 @@ export const foxbitAPIConnection = () => {
     wsocket.addEventListener('message', callback);
   }
 
-  const subscribeInstrument = (status, instrumentId) => {
+  const subscribeInstrument = async (status, instrumentId) => {
     if (status !== 1) return;
     const payloadSub = {
       m: 0,
@@ -44,8 +47,11 @@ export const foxbitAPIConnection = () => {
       o: JSON.stringify({ InstrumentId: instrumentId }),
     }
 
-    wsocket.send(JSON.stringify(payloadSub));
+    await wsocket.send(JSON.stringify(payloadSub));
+  };
 
+  const subscribeUpdateInstrument = async (status, instrumentId) => {
+    if (status !== 1) return;
     const payloadUpdate = {
       m: 0,
       i: 2,
@@ -53,39 +59,16 @@ export const foxbitAPIConnection = () => {
       o: JSON.stringify({ InstrumentId: instrumentId }),
     }
 
-    wsocket.send(JSON.stringify(payloadUpdate));
-  };
-
-  const message = (channelSelected) => {
-    if (status() !== 1) return;
-    wsocket.addEventListener('message', function message(response) {
-      const { n, o } = JSON.parse(response.data);
-      const channel = n; // GetInstruments | SubscribeLevel1 | Level1UpdateEvent
-      const data = JSON.parse(o);
-
-      // RESPONSE WITH ALL CRYPTOS
-      if (channel === 'GetInstruments') {
-        console.log(data);
-      }
-
-      // FIRST RESPONSE
-      if (channel === 'SubscribeLevel1') {
-        console.log(data);
-      }
-
-      // UPDATES TO SUBSCRIBELEVEL1
-      if (channel === 'Level1UpdateEvent') {
-        console.log(data);
-      }
-    });
+    await wsocket.send(JSON.stringify(payloadUpdate));
   };
 
   return {
+    status,
     open,
     close,
     subAllInstruments,
     subscribeInstrument,
+    subscribeUpdateInstrument,
     listeningMessages,
-    message
   }
 };
