@@ -1,50 +1,98 @@
+import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
+import DefaultCurrancy from '../../../public/default-currency.svg';
+import {
+  sanatizeVolume, santizeCurrency
+} from '../../utils';
+import CurrencyIndex from '../CurrencyIndex';
 import * as S from './styles';
 
 const Card = ({ 
   socket,
   instrumentInfo,
-  socketStatus
+  socketStatus,
 }) => {
   const { Product1Symbol, Symbol, InstrumentId } = instrumentInfo;
-
   const [instrumentCurrentValues, setInstrumentCurrentValues] = useState({});
 
   useEffect(() => {
-   socket.subscribeInstrument(socketStatus, InstrumentId);
-  //  socket.subscribeUpdateInstrument(socketStatus, InstrumentId);
-   socket.listeningMessages(socketStatus, function message(response) {
+    socket.subscribeInstrument(socketStatus, InstrumentId);
+    socket.listeningMessages(socketStatus, function message(response) {
       const { n, o } = JSON.parse(response.data);
-      const channel = n; // GetInstruments | SubscribeLevel1 | Level1UpdateEvent
+      const channel = n;
       const data = JSON.parse(o);
-  
-      // RESPONSE WITH ALL CRYPTOS
+
       if (channel === 'SubscribeLevel1') {
-        setInstrumentCurrentValues(data);
+        if(InstrumentId === data.InstrumentId) {
+          setInstrumentCurrentValues(data);
+        }
+      }
+      
+      if (channel === 'Level1UpdateEvent') {
+        if(InstrumentId === data.InstrumentId) {
+          setInstrumentCurrentValues(data);
+        }
       }
     })
   },[]);
 
-  useEffect(() => {
-    console.log(instrumentCurrentValues);
-  }, [instrumentCurrentValues]);
+  const Coin = () => {
+    return (
+      <S.CoinBox>
+        {
+          Product1Symbol
+          ? (
+            <img
+              src={`https://statics.foxbit.com.br/icons/colored/${Product1Symbol.toLowerCase()}.svg`}
+            />
+          )
+          : <DefaultCurrancy />
+        }
+      </S.CoinBox>
+    )
+  };
+
+  const Prize = () => {
+    return instrumentCurrentValues?.LastTradedPx
+          ? <S.Prize>
+              {santizeCurrency(instrumentCurrentValues.LastTradedPx)}
+            </S.Prize>
+          : <S.Prize>loading...</S.Prize>
+  };
+
+  const Volume = () => {
+    return !(instrumentCurrentValues?.Rolling24HrVolume === null)
+          ?<S.VolumeValue>
+            {sanatizeVolume(instrumentCurrentValues.Rolling24HrVolume)} {Product1Symbol}
+          </S.VolumeValue>
+          :<S.VolumeValue>loading...</S.VolumeValue>
+  }
 
   return(
     <S.Card>
       <S.Row>
-        <img
-          src={`https://statics.foxbit.com.br/icons/colored/${Product1Symbol.toLowerCase()}.svg`}
-          height="28px"
-          width="28px"
-        />
-        <S.Index>1,2%</S.Index>
+        <Coin />
+        <CurrencyIndex currIndex={instrumentCurrentValues.Rolling24HrPxChange}/>
       </S.Row>
       <S.Coin>{Symbol}</S.Coin>
-      <S.Prize><span>R$</span>{instrumentCurrentValues.LastTradedPx}</S.Prize>
+      <Prize />
       <S.VolumeDescription>volume (24h)</S.VolumeDescription>
-      <S.VolumeValue>{`${instrumentCurrentValues.Rolling24HrVolume} ${Product1Symbol}`}</S.VolumeValue>
+      <Volume />
     </S.Card>
   )
 };
+
+Card.propTypes = {
+  socket: PropTypes.shape({
+    subscribeInstrument: PropTypes.func.isRequired,
+    listeningMessages: PropTypes.func.isRequired,
+  }),
+  instrumentInfo: PropTypes.shape({
+    Product1Symbol: PropTypes.string.isRequired,
+    Symbol: PropTypes.string.isRequired,
+    InstrumentId: PropTypes.number.isRequired,
+  }),
+  socketStatus: PropTypes.number.isRequired,
+}
 
 export default Card;

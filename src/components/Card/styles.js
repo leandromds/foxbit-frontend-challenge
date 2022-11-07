@@ -19,22 +19,29 @@ export const Row = styled.div`
   margin: 0px 0px 4px;
 `;
 
+export const CoinBox = styled.div`
+  height: 28px;
+  width: 28px;
+  display: flex;
+`;
+
 export const Index = styled.span`
   display: block;
   border-radius: 12px;
   background-color: ${props => `${props.theme.colors.bg.positive.main}`};
-  font-size: ${props => `${props.theme.typography.xxs}px`};
+  font-size: ${props => `${props.theme.typography.size.xxs}px`};
+  font-family: ${props => `${props.theme.typography.family.semibold}`};
   padding: 4px 4px 4px 8px;
 `;
 
 export const Coin = styled.p`
   margin: 0px 0px 8px;
-  font-size: ${props => `${props.theme.typography.sm}px`};
+  font-size: ${props => `${props.theme.typography.size.sm}px`};
 `;
 
 export const Prize = styled.p`
   margin: 0px 0px 20px;
-  font-size: ${props => `${props.theme.typography.md}px`};
+  font-size: ${props => `${props.theme.typography.size.md}px`};
   & > span {
     color: ${ props => props.theme.colors.paragraph.lighter};
   }
@@ -42,11 +49,11 @@ export const Prize = styled.p`
 
 export const VolumeDescription = styled.p`
   margin: 0px 0px 4px;
-  font-size: ${props => `${props.theme.typography.xxxs}px`};
+  font-size: ${props => `${props.theme.typography.size.xxxs}px`};
   color: ${ props => props.theme.colors.paragraph.light};
 `;
 
 export const VolumeValue = styled.p`
   margin: 0px;
-  font-size: ${props => `${props.theme.typography.xxs}px`};
+  font-size: ${props => `${props.theme.typography.size.xxs}px`};
 `;
