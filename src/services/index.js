@@ -1,20 +1,16 @@
 export const foxbitAPIConnection = () => {
   const wsocket = new WebSocket('wss://api.foxbit.com.br/');
 
-  const status = (currentStatus) => currentStatus;
-
   const open = () => {
     return new Promise((resolve) => {
       wsocket.addEventListener('open', function open() {
         console.log('connected');
-        status(wsocket.readyState);
         resolve(wsocket.readyState);
       });
     })
   };
 
-  const close = (status) => {
-    if (status === 2 || status === 3) return;
+  const close = () => {
     wsocket.addEventListener('close', function close() {
       console.log('disconnected');
     });
@@ -23,34 +19,34 @@ export const foxbitAPIConnection = () => {
   const subAllInstruments = (status) => {
     if (status !== 1) return;
     let instrumentList;
-    const payloadInstruments = {
+    const payload = {
       m: 0,
       i: 2,
       n: 'GetInstruments',
       o: JSON.stringify({ OMSID: 1}),
     };
 
-    wsocket.send(JSON.stringify(payloadInstruments));
-  }
+    wsocket.send(JSON.stringify(payload));
+  };
 
   const listeningMessages= (status, callback) => {
     if (status !== 1) return;
     wsocket.addEventListener('message', callback);
-  }
+  };
 
-  const subscribeInstrument = async (status, instrumentId) => {
+  const subscribeInstrument = (status, instrumentId) => {
     if (status !== 1) return;
-    const payloadSub = {
+    const payload = {
       m: 0,
       i: 2,
       n: 'SubscribeLevel1',
       o: JSON.stringify({ InstrumentId: instrumentId }),
     }
 
-    await wsocket.send(JSON.stringify(payloadSub));
+    wsocket.send(JSON.stringify(payload));
   };
 
-  const subscribeUpdateInstrument = async (status, instrumentId) => {
+  const subscribeUpdateInstrument = (status, instrumentId) => {
     if (status !== 1) return;
     const payloadUpdate = {
       m: 0,
@@ -59,11 +55,10 @@ export const foxbitAPIConnection = () => {
       o: JSON.stringify({ InstrumentId: instrumentId }),
     }
 
-    await wsocket.send(JSON.stringify(payloadUpdate));
+    wsocket.send(JSON.stringify(payloadUpdate));
   };
 
   return {
-    status,
     open,
     close,
     subAllInstruments,
