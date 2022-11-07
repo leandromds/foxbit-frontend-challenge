@@ -44,6 +44,7 @@ const Card = ({
           ? (
             <img
               src={`https://statics.foxbit.com.br/icons/colored/${Product1Symbol.toLowerCase()}.svg`}
+              alt={Symbol}
             />
           )
           : <DefaultCurrancy />
