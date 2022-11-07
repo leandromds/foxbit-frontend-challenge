@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "lint": "next lint"
   },
   "dependencies": {
     "@testing-library/react": "^12.1.5",
@@ -16,6 +17,8 @@
     "styled-components": "^5.3.3"
   },
   "devDependencies": {
-    "@svgr/webpack": "^6.5.1"
+    "@svgr/webpack": "^6.5.1",
+    "eslint": "8.27.0",
+    "eslint-config-next": "13.0.2"
   }
 }
