@@ -13,6 +13,11 @@ export default function Home() {
 
   useEffect(() => {
     setSocket(foxbitAPIConnection());
+    return () => {
+      if(socket) {
+        socket.close();
+      }
+    }
   }, []);
 
   useEffect(() => {
@@ -22,7 +27,7 @@ export default function Home() {
           socket.subAllInstruments(status);
           socket.listeningMessages(status, function message(response) {
             const { n, o } = JSON.parse(response.data);
-            const channel = n; // GetInstruments | SubscribeLevel1 | Level1UpdateEvent
+            const channel = n;
             const data = JSON.parse(o);
 
             if (channel === 'GetInstruments') {
@@ -34,6 +39,22 @@ export default function Home() {
     }
   }, [socket]);
 
+  const listCardsWithInstruments = (instruments) => {
+    const allInstruments = instruments.map((ins, index) => {
+      return (
+        <Card 
+          key={ins.InstrumentId}
+          instrumentInfo={ins}
+          socketStatus={socketStatus}
+          socket={socket}
+          cardIndex={index}
+          totalInstruments={instruments.length}
+        />
+      )
+    });
+    return allInstruments;
+  };
+
   return (
     <div>
       <Head>
@@ -44,17 +65,7 @@ export default function Home() {
       <main>
         <Grid>
           {
-            instruments.length
-            && instruments.map(ins => {
-              return (
-                <Card 
-                  key={ins.InstrumentId}
-                  instrumentInfo={ins}
-                  socketStatus={socketStatus}
-                  socket={socket}
-                />
-              )
-            })
+            !!instruments.length && listCardsWithInstruments(instruments)
           }
         </Grid>
       </main>
