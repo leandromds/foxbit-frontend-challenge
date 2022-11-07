@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { sanatizeIndex } from '../../utils';
 
 import DownIndex from '../../../public/downIndex.svg';
@@ -30,6 +31,10 @@ const CurrencyIndex = ({ currIndex }) => {
       {currValue}%
     </S.Index>
   );
+};
+
+CurrencyIndex.PropTypes = {
+  currIndex: PropTypes.number.isRequired
 };
 
 export default CurrencyIndex;

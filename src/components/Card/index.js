@@ -93,6 +93,6 @@ Card.propTypes = {
     InstrumentId: PropTypes.number.isRequired,
   }),
   socketStatus: PropTypes.number.isRequired,
-}
+};
 
 export default Card;
