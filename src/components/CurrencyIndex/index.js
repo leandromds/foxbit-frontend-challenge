@@ -33,8 +33,8 @@ const CurrencyIndex = ({ currIndex }) => {
   );
 };
 
-CurrencyIndex.PropTypes = {
-  currIndex: PropTypes.number.isRequired
+CurrencyIndex.propTypes = {
+  currIndex: PropTypes.number
 };
 
 export default CurrencyIndex;

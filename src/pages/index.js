@@ -6,7 +6,7 @@ import { foxbitAPIConnection } from "../services";
 import Card from '../components/Card';
 import Grid from '../components/Grid';
 
-export default function Home() {
+const Home = () => {
   const [socket, setSocket] = useState(null);
   const [socketStatus, setSocketStatus] = useState(null);
   const [instruments, setInstruments] = useState([]);
@@ -71,4 +71,6 @@ export default function Home() {
       </main>
     </div>
   )
-}
+};
+
+export default Home;
